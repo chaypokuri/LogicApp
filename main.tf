@@ -5,7 +5,6 @@ provider "azurerm" {
   client_id       = "1a046c02-8c39-4f1d-b30b-93f41a9c6b15"
   client_secret   = "kUz8Q~qwom0J-MM5ZNqexXyUOguygMj5QELdhdl5"
 }
- 
 terraform {
   required_providers {
     azurerm = {
@@ -14,55 +13,59 @@ terraform {
     }
   }
 }
- 
 resource "azurerm_resource_group" "example" {
   name     = "example-resources"
   location = "West Europe"
 }
- 
+
+resource "azurerm_app_service_plan" "example" {
+  name                = "azure-functions-test-service-plan"
+  location            = azurerm_resource_group.example.location
+  resource_group_name = azurerm_resource_group.example.name
+  kind                = "elastic"
+
+  sku {
+    tier = "WorkflowStandard"
+    size = "WS1"
+  }
+}
 resource "azurerm_virtual_network" "example" {
   name                = "example-virtual-network"
   address_space       = ["10.0.0.0/24"]
   location            = azurerm_resource_group.example.location
   resource_group_name = azurerm_resource_group.example.name
 }
- 
 resource "azurerm_subnet" "example" {
   name                 = "example-subnet"
   resource_group_name  = azurerm_resource_group.example.name
   virtual_network_name = azurerm_virtual_network.example.name
   address_prefixes     = ["10.0.1.0/27"]
- 
   delegation {
     name = "example-delegation"
- 
     service_delegation {
       name    = "Microsoft.Web/serverFarms"
       actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
     }
   }
 }
+resource "azurerm_storage_account" "example" {
+  name                     = "linuxfunctionappsa"
+  resource_group_name      = azurerm_resource_group.example.name
+  location                 = azurerm_resource_group.example.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+}
+
+  resource "azurerm_logic_app_standard" "example" {
+  name                       = "test-azure-functions"
+  resource_group_name = azurerm_resource_group.example.name
+  location            = azurerm_resource_group.example.location
+  storage_account_name       = azurerm_storage_account.example.name
+  storage_account_access_key = azurerm_storage_account.example.primary_access_key
+  app_service_plan_id     = azurerm_app_service_plan.example.id
+  virtual_network_subnet_id = azurerm_subnet.example.id
  
-resource "azurerm_logic_app_integration_service_environment" "example" {
-  name                = "example-ise"
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
-  subnet_id           = azurerm_subnet.example.id
+  site_config {
+    
+  }
 }
-
-resource "azurerm_logic_app_integration_account" "example" {
-  name                = "example-ia"
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
-  sku_name            = "Standard"
-}
-
-resource "azurerm_logic_app_workflow" "example" {
-  name                =  "example-la"
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
-  integration_service_environment_id = azurerm_logic_app_integration_service_environment.example.id
-  logic_app_integration_account_id   = azurerm_logic_app_integration_account.example.id
- 
-}
-
