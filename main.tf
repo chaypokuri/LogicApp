@@ -59,7 +59,7 @@ resource "azurerm_storage_account" "example" {
   storage_account_name       = azurerm_storage_account.example.name
   storage_account_access_key = azurerm_storage_account.example.primary_access_key
   app_service_plan_id     = azurerm_service_plan.example.id
-  virtual_network_subnet_id = azurerm_subnet.example.id
+  #virtual_network_subnet_id = azurerm_subnet.example.id
  
   site_config {
     
