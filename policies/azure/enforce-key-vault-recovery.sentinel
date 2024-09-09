@@ -1,0 +1,18 @@
+# Policy to enforce enabling "purge_protection_enabled" and setting soft deletion retention policy to 90 on all Azure Key Vault's ("azurerm_key_vault")
+
+# Import tfplan-functions.sentinel with alias "plan"
+import "tfplan-functions" as plan
+
+# Get all Azure Key Vaults
+all_azure_key_vaults = plan.find_resources("azurerm_key_vault")
+
+# Filter to Azure Key Vaults with violations
+# Warnings will be printed for all violations since the last parameter is true
+violating_azure_key_vaults_purge_protection = plan.filter_attribute_is_value(all_azure_key_vaults, "purge_protection_enabled", false, true)
+violating_azure_key_vaults_soft_deletion = plan.filter_attribute_is_not_value(all_azure_key_vaults, "soft_delete_retention_days", 90, true)
+
+# Main rule
+main = rule {
+	length(violating_azure_key_vaults_purge_protection["messages"]) is 0 and
+	length(violating_azure_key_vaults_soft_deletion["messages"]) is 0
+}
