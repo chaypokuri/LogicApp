@@ -1,1 +1,724 @@
+terraform_version = "0.14.7"
 
+planned_values = {
+	"outputs": {},
+	"resources": {
+		"azurerm_resource_group.this": {
+			"address":        "azurerm_resource_group.this",
+			"depends_on":     [],
+			"deposed_key":    "",
+			"index":          null,
+			"mode":           "managed",
+			"module_address": "",
+			"name":           "this",
+			"provider_name":  "registry.terraform.io/hashicorp/azurerm",
+			"tainted":        false,
+			"type":           "azurerm_resource_group",
+			"values": {
+				"location": "eastus",
+				"name":     "sentinel-test",
+				"tags": {
+					"Name":  "SentinelTest",
+					"Owner": "Bob",
+				},
+				"timeouts": null,
+			},
+		},
+		"azurerm_subnet.this": {
+			"address":        "azurerm_subnet.this",
+			"depends_on":     [],
+			"deposed_key":    "",
+			"index":          null,
+			"mode":           "managed",
+			"module_address": "",
+			"name":           "this",
+			"provider_name":  "registry.terraform.io/hashicorp/azurerm",
+			"tainted":        false,
+			"type":           "azurerm_subnet",
+			"values": {
+				"address_prefixes": [
+					"10.0.2.0/24",
+				],
+				"delegation": [],
+				"enforce_private_link_endpoint_network_policies": false,
+				"enforce_private_link_service_network_policies":  false,
+				"name":                        "internal",
+				"resource_group_name":         "sentinel-test",
+				"service_endpoint_policy_ids": null,
+				"service_endpoints":           null,
+				"timeouts":                    null,
+				"virtual_network_name":        "sentinel-test",
+			},
+		},
+		"azurerm_virtual_network.this": {
+			"address":        "azurerm_virtual_network.this",
+			"depends_on":     [],
+			"deposed_key":    "",
+			"index":          null,
+			"mode":           "managed",
+			"module_address": "",
+			"name":           "this",
+			"provider_name":  "registry.terraform.io/hashicorp/azurerm",
+			"tainted":        false,
+			"type":           "azurerm_virtual_network",
+			"values": {
+				"address_space": [
+					"10.0.0.0/16",
+				],
+				"bgp_community":        null,
+				"ddos_protection_plan": [],
+				"dns_servers":          null,
+				"location":             "eastus",
+				"name":                 "sentinel-test",
+				"resource_group_name":  "sentinel-test",
+				"tags": {
+					"Name":  "SentinelTest",
+					"Owner": "Bob",
+				},
+				"timeouts":              null,
+				"vm_protection_enabled": false,
+			},
+		},
+		"azurerm_api_management.this": {
+			"address": "azurerm_api_management.this",
+			"depends_on": [],
+			"deposed_key": "",
+			"index": null,
+			"mode": "managed",
+			"module_address": "",
+			"name": "this",
+			"provider_name": "registry.terraform.io/hashicorp/azurerm",\
+			"tainted": false,
+			"type": "azurerm_api_management",
+			"values": {
+				"name": "sentinel-apim",
+				"resource_group_name": "sentinel-test",
+				"location": "eastus",
+				"publisher_email": "admin@example.com",
+				"publisher_name": "SentinelTest",
+				"sku_name": "Developer",
+				"virtual_network_configuration": {
+					"subnet_id": "/subscriptions/{subscriptionId}/resourceGroups/sentinel-test/providers/Microsoft.Network/virtualNetworks/sentinel-test/subnets/internal"
+				},
+				"tags": {
+					"Name": "SentinelAPIM",
+					"Owner": "Bob",
+				},
+				"timeouts": null
+			}
+		}
+	}
+}
+
+variables = {}
+
+resource_changes = {
+
+	"azurerm_resource_group.this": {
+		"address": "azurerm_resource_group.this",
+		"change": {
+			"actions": [
+				"create",
+			],
+			"after": {
+				"location": "eastus",
+				"name":     "sentinel-test",
+				"tags": {
+					"Name":  "SentinelTest",
+					"Owner": "Bob",
+				},
+				"timeouts": null,
+			},
+			"after_unknown": {
+				"id":   true,
+				"tags": {},
+			},
+			"before": null,
+		},
+		"deposed":        "",
+		"index":          null,
+		"mode":           "managed",
+		"module_address": "",
+		"name":           "this",
+		"provider_name":  "registry.terraform.io/hashicorp/azurerm",
+		"type":           "azurerm_resource_group",
+	},
+	"azurerm_subnet.this": {
+		"address": "azurerm_subnet.this",
+		"change": {
+			"actions": [
+				"create",
+			],
+			"after": {
+				"address_prefixes": [
+					"10.0.2.0/24",
+				],
+				"delegation": [],
+				"enforce_private_link_endpoint_network_policies": false,
+				"enforce_private_link_service_network_policies":  false,
+				"name":                        "internal",
+				"resource_group_name":         "sentinel-test",
+				"service_endpoint_policy_ids": null,
+				"service_endpoints":           null,
+				"timeouts":                    null,
+				"virtual_network_name":        "sentinel-test",
+			},
+			"after_unknown": {
+				"address_prefix": true,
+				"address_prefixes": [
+					false,
+				],
+				"delegation": [],
+				"id":         true,
+			},
+			"before": null,
+		},
+		"deposed":        "",
+		"index":          null,
+		"mode":           "managed",
+		"module_address": "",
+		"name":           "this",
+		"provider_name":  "registry.terraform.io/hashicorp/azurerm",
+		"type":           "azurerm_subnet",
+	},
+	"azurerm_virtual_network.this": {
+		"address": "azurerm_virtual_network.this",
+		"change": {
+			"actions": [
+				"create",
+			],
+			"after": {
+				"address_space": [
+					"10.0.0.0/16",
+				],
+				"bgp_community":        null,
+				"ddos_protection_plan": [],
+				"dns_servers":          null,
+				"location":             "eastus",
+				"name":                 "sentinel-test",
+				"resource_group_name":  "sentinel-test",
+				"tags": {
+					"Name":  "SentinelTest",
+					"Owner": "Bob",
+				},
+				"timeouts":              null,
+				"vm_protection_enabled": false,
+			},
+			"after_unknown": {
+				"address_space": [
+					false,
+				],
+				"ddos_protection_plan": [],
+				"guid":                 true,
+				"id":                   true,
+				"subnet":               true,
+				"tags":                 {},
+			},
+			"before": null,
+		},
+		"deposed":        "",
+		"index":          null,
+		"mode":           "managed",
+		"module_address": "",
+		"name":           "this",
+		"provider_name":  "registry.terraform.io/hashicorp/azurerm",
+		"type":           "azurerm_virtual_network",
+	},
+	"azurerm_api_management.this": {
+		"address": "azurerm_api_management.this",
+		"change": {
+			"actions": ["create"],
+			"after": {
+				"name": "sentinel-apim",
+				"resource_group_name": "sentinel-test",
+				"location": "eastus",
+				"publisher_email": "admin@example.com",
+				"publisher_name": "SentinelTest",
+				"sku_name": "Developer",
+				"virtual_network_configuration": {
+					"subnet_id": "/subscriptions/{subscriptionId}/resourceGroups/sentinel-test/providers/Microsoft.Network/virtualNetworks/sentinel-test/subnets/internal"
+				},
+				"tags": {
+					"Name": "SentinelAPIM",
+					"Owner": "Bob"
+				},
+				"timeouts": null
+			},
+			"after_unknown": {
+				"hostname_configuration": [],
+				"id": true,
+				"identity": true,
+				"public_ip_addresses": true,
+				"scm_url": true,
+				"tags": {},
+				"virtual_network_configuration": {
+					"subnet_id": true
+				}
+			},
+			"before": null
+		},
+		"deposed": "",
+		"index": null,
+		"mode": "managed",
+		"module_address": "",
+		"name": "this",
+		"provider_name": "registry.terraform.io/hashicorp/azurerm",
+		"type": "azurerm_api_management"
+	}
+}
+
+output_changes = {}
+
+raw = {
+	"configuration": {
+		"provider_config": {
+			"azurerm": {
+				"expressions": {
+					"features": [
+						{},
+					],
+				},
+				"name": "azurerm",
+			},
+		},
+		"root_module": {
+			"resources": [
+				{
+					"address": "azurerm_network_interface.this",
+					"expressions": {
+						"ip_configuration": [
+							{
+								"name": {
+									"constant_value": "internal",
+								},
+								"private_ip_address_allocation": {
+									"constant_value": "Dynamic",
+								},
+								"subnet_id": {
+									"references": [
+										"azurerm_subnet.this",
+									],
+								},
+							},
+						],
+						"location": {
+							"references": [
+								"azurerm_resource_group.this",
+							],
+						},
+						"name": {
+							"constant_value": "this-nic",
+						},
+						"resource_group_name": {
+							"references": [
+								"azurerm_resource_group.this",
+							],
+						},
+						"tags": {
+							"constant_value": {
+								"Name":  "SentinelTest",
+								"Owner": "Bob",
+							},
+						},
+					},
+					"mode":                "managed",
+					"name":                "this",
+					"provider_config_key": "azurerm",
+					"schema_version":      0,
+					"type":                "azurerm_network_interface",
+				},
+				{
+					"address": "azurerm_resource_group.this",
+					"expressions": {
+						"location": {
+							"constant_value": "eastus",
+						},
+						"name": {
+							"constant_value": "sentinel-test",
+						},
+						"tags": {
+							"constant_value": {
+								"Name":  "SentinelTest",
+								"Owner": "Bob",
+							},
+						},
+					},
+					"mode":                "managed",
+					"name":                "this",
+					"provider_config_key": "azurerm",
+					"schema_version":      0,
+					"type":                "azurerm_resource_group",
+				},
+				{
+					"address": "azurerm_subnet.this",
+					"expressions": {
+						"address_prefixes": {
+							"constant_value": [
+								"10.0.2.0/24",
+							],
+						},
+						"name": {
+							"constant_value": "internal",
+						},
+						"resource_group_name": {
+							"references": [
+								"azurerm_resource_group.this",
+							],
+						},
+						"virtual_network_name": {
+							"references": [
+								"azurerm_virtual_network.this",
+							],
+						},
+					},
+					"mode":                "managed",
+					"name":                "this",
+					"provider_config_key": "azurerm",
+					"schema_version":      0,
+					"type":                "azurerm_subnet",
+				},
+				{
+					"address": "azurerm_virtual_network.this",
+					"expressions": {
+						"address_space": {
+							"constant_value": [
+								"10.0.0.0/16",
+							],
+						},
+						"location": {
+							"references": [
+								"azurerm_resource_group.this",
+							],
+						},
+						"name": {
+							"constant_value": "sentinel-test",
+						},
+						"resource_group_name": {
+							"references": [
+								"azurerm_resource_group.this",
+							],
+						},
+						"tags": {
+							"constant_value": {
+								"Name":  "SentinelTest",
+								"Owner": "Bob",
+							},
+						},
+					},
+					"mode":                "managed",
+					"name":                "this",
+					"provider_config_key": "azurerm",
+					"schema_version":      0,
+					"type":                "azurerm_virtual_network",
+				},
+				{
+					"address": "azurerm_windows_virtual_machine.this",
+					"expressions": {
+						"admin_password": {
+							"constant_value": "P@$$w0rd1234!",
+						},
+						"admin_username": {
+							"constant_value": "adminuser",
+						},
+						"location": {
+							"references": [
+								"azurerm_resource_group.this",
+							],
+						},
+						"name": {
+							"constant_value": "sentinel-test",
+						},
+						"network_interface_ids": {
+							"references": [
+								"azurerm_network_interface.this",
+							],
+						},
+						"os_disk": [
+							{
+								"caching": {
+									"constant_value": "ReadWrite",
+								},
+								"storage_account_type": {
+									"constant_value": "Standard_LRS",
+								},
+							},
+						],
+						"resource_group_name": {
+							"references": [
+								"azurerm_resource_group.this",
+							],
+						},
+						"size": {
+							"constant_value": "Standard_F1",
+						},
+						"source_image_reference": [
+							{
+								"offer": {
+									"constant_value": "WindowsServer",
+								},
+								"publisher": {
+									"constant_value": "MicrosoftWindowsServer",
+								},
+								"sku": {
+									"constant_value": "2019-Datacenter",
+								},
+								"version": {
+									"constant_value": "latest",
+								},
+							},
+						],
+						"tags": {
+							"constant_value": {
+								"Name":  "SentinelTest",
+								"Owner": "Bob",
+							},
+						},
+					},
+					"mode":                "managed",
+					"name":                "this",
+					"provider_config_key": "azurerm",
+					"schema_version":      0,
+					"type":                "azurerm_windows_virtual_machine",
+				},
+			],
+		},
+	},
+	"format_version": "0.1",
+	"planned_values": {
+		"root_module": {
+			"resources": [
+				{
+					"address":        "azurerm_resource_group.this",
+					"mode":           "managed",
+					"name":           "this",
+					"provider_name":  "registry.terraform.io/hashicorp/azurerm",
+					"schema_version": 0,
+					"type":           "azurerm_resource_group",
+					"values": {
+						"location": "eastus",
+						"name":     "sentinel-test",
+						"tags": {
+							"Name":  "SentinelTest",
+							"Owner": "Bob",
+						},
+						"timeouts": null,
+					},
+				},
+				{
+					"address":        "azurerm_subnet.this",
+					"mode":           "managed",
+					"name":           "this",
+					"provider_name":  "registry.terraform.io/hashicorp/azurerm",
+					"schema_version": 0,
+					"type":           "azurerm_subnet",
+					"values": {
+						"address_prefixes": [
+							"10.0.2.0/24",
+						],
+						"delegation": [],
+						"enforce_private_link_endpoint_network_policies": false,
+						"enforce_private_link_service_network_policies":  false,
+						"name":                        "internal",
+						"resource_group_name":         "sentinel-test",
+						"service_endpoint_policy_ids": null,
+						"service_endpoints":           null,
+						"timeouts":                    null,
+						"virtual_network_name":        "sentinel-test",
+					},
+				},
+				{
+					"address":        "azurerm_virtual_network.this",
+					"mode":           "managed",
+					"name":           "this",
+					"provider_name":  "registry.terraform.io/hashicorp/azurerm",
+					"schema_version": 0,
+					"type":           "azurerm_virtual_network",
+					"values": {
+						"address_space": [
+							"10.0.0.0/16",
+						],
+						"bgp_community":        null,
+						"ddos_protection_plan": [],
+						"dns_servers":          null,
+						"location":             "eastus",
+						"name":                 "sentinel-test",
+						"resource_group_name":  "sentinel-test",
+						"tags": {
+							"Name":  "SentinelTest",
+							"Owner": "Bob",
+						},
+						"timeouts":              null,
+					},
+				},
+				{
+					"address": "azurerm_api_management.this",
+					"mode": "managed",
+					"name": "this",
+					"provider_name": "registry.terraform.io/hashicorp/azurerm",
+					"schema_version": 0,
+					"type": "azurerm_api_management",
+					"values": {
+						"location": "eastus",
+						"name": "sentinel-apim",
+						"resource_group_name": "sentinel-test",
+						"publisher_email": "admin@sentinel.com",
+						"publisher_name": "SentinelAdmin",
+						"sku_name": "Developer",
+						"tags": {
+							"Name": "SentinelAPIM",
+							"Owner": "Bob"
+						},
+						"virtual_network_configuration": {
+							"subnet_id": "/subscriptions/{subscription_id}/resourceGroups/sentinel-test/providers/Microsoft.Network/virtualNetworks/sentinel-vnet/subnets/internal"
+						},
+						"zone": [],
+						"timeouts": null
+					}
+				},
+			],
+		},
+	},
+	"resource_changes": [
+		{
+			"address": "azurerm_resource_group.this",
+			"change": {
+				"actions": [
+					"create",
+				],
+				"after": {
+					"location": "eastus",
+					"name":     "sentinel-test",
+					"tags": {
+						"Name":  "SentinelTest",
+						"Owner": "Bob",
+					},
+					"timeouts": null,
+				},
+				"after_unknown": {
+					"id":   true,
+					"tags": {},
+				},
+				"before": null,
+			},
+			"mode":          "managed",
+			"name":          "this",
+			"provider_name": "registry.terraform.io/hashicorp/azurerm",
+			"type":          "azurerm_resource_group",
+		},
+		{
+			"address": "azurerm_subnet.this",
+			"change": {
+				"actions": [
+					"create",
+				],
+				"after": {
+					"address_prefixes": [
+						"10.0.2.0/24",
+					],
+					"delegation": [],
+					"enforce_private_link_endpoint_network_policies": false,
+					"enforce_private_link_service_network_policies":  false,
+					"name":                        "internal",
+					"resource_group_name":         "sentinel-test",
+					"service_endpoint_policy_ids": null,
+					"service_endpoints":           null,
+					"timeouts":                    null,
+					"virtual_network_name":        "sentinel-test",
+				},
+				"after_unknown": {
+					"address_prefix": true,
+					"address_prefixes": [
+						false,
+					],
+					"delegation": [],
+					"id":         true,
+				},
+				"before": null,
+			},
+			"mode":          "managed",
+			"name":          "this",
+			"provider_name": "registry.terraform.io/hashicorp/azurerm",
+			"type":          "azurerm_subnet",
+		},
+		{
+			"address": "azurerm_virtual_network.this",
+			"change": {
+				"actions": [
+					"create",
+				],
+				"after": {
+					"address_space": [
+						"10.0.0.0/16",
+					],
+					"bgp_community":        null,
+					"ddos_protection_plan": [],
+					"dns_servers":          null,
+					"location":             "eastus",
+					"name":                 "sentinel-test",
+					"resource_group_name":  "sentinel-test",
+					"tags": {
+						"Name":  "SentinelTest",
+						"Owner": "Bob",
+					},
+					"timeouts":              null,
+					"vm_protection_enabled": false,
+				},
+				"after_unknown": {
+					"address_space": [
+						false,
+					],
+					"ddos_protection_plan": [],
+					"guid":                 true,
+					"id":                   true,
+					"subnet":               true,
+					"tags":                 {},
+				},
+				"before": null,
+			},
+			"mode":          "managed",
+			"name":          "this",
+			"provider_name": "registry.terraform.io/hashicorp/azurerm",
+			"type":          "azurerm_virtual_network",
+		},
+		{
+			"address": "azurerm_api_management.this",
+			"change": {
+				"actions": [
+					"create"
+				],
+				"after": {
+					"identity": [],
+					"location": "eastus",
+					"name": "sentinel-apim",
+					"resource_group_name": "sentinel-test",
+					"publisher_email": "admin@sentinel.com",
+					"publisher_name": "SentinelAdmin",
+					"sku_name": "Developer",
+					"tags": {
+						"Name": "SentinelAPIM",
+						"Owner": "Bob"
+					},
+					"virtual_network_configuration": {
+						"subnet_id": "/subscriptions/{subscription_id}/resourceGroups/sentinel-test/providers/Microsoft.Network/virtualNetworks/sentinel-vnet/subnets/internal"
+					},
+					"zone": [],
+					"timeouts": null
+				},
+				"after_unknown": {
+					"identity": [],
+					"tags": {},
+					"virtual_network_configuration": {
+						"subnet_id": true
+					},
+					"zone": true
+				},
+				"before": null
+			},
+			"mode": "managed",
+			"name": "this",
+			"provider_name": "registry.terraform.io/hashicorp/azurerm",
+			"type": "azurerm_api_management"
+		}
+	],
+	"terraform_version": "0.14.7",
+}
