@@ -21,5 +21,5 @@ resource "azurerm_logic_app_workflow" "example" {
   name                = "workflow1"
   location            = azurerm_resource_group.example.location
   resource_group_name = azurerm_resource_group.example.name
-  #integration_service_environment_id = "/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.Web/hostingEnvironments/<ise-name>"
+  integration_service_environment_id = "/subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/Microsoft.Web/hostingEnvironments/<ise-name>"
 }
