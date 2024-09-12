@@ -5,7 +5,86 @@ planned_values = {
 		"azurerm_resource_group.this": {
 			"address":        "azurerm_resource_group.this",
 			"depends_on":     [],
-			"deposed_key":    "",
+			"deposed_key":    ""import "strings"
+import "types"
+
+_modules = {
+    "root": {
+        "data": {},
+        "path": [],
+        "resources": {
+            "azurerm_logic_app_standard": {
+                "example": {
+                    0: {
+                        "applied": {
+                            "app_service_plan_id":     "/subscriptions/c2bd123a-183f-43d5-bf41-c725494e595a/resourceGroups/test-rg/providers/Microsoft.Web/serverfarms/test-asp",
+                            "bundle_version":          "[1.*, 2.0.0)",
+                            "client_certificate_mode": null,
+                            "enabled":                 true,
+                            "https_only":              false,
+                            "identity":                [],
+                            "location":                "eastus",
+                            "name":                    "test-azure-functions",
+                            "resource_group_name":     "test-rg",
+                            "site_config": [
+                                {
+                                    "always_on":                        false,
+                                    "dotnet_framework_version":         "v4.0",
+                                    "health_check_path":                null,
+                                    "http2_enabled":                    false,
+                                    "public_network_access_enabled":    true,
+                                    "runtime_scale_monitoring_enabled": false,
+                                    "scm_use_main_ip_restriction":      false,
+                                    "use_32_bit_worker_process":        true,
+                                    "websockets_enabled":               false,
+                                },
+                            ],
+                            "storage_account_access_key": "REDACTED_SENSITIVE",
+                            "storage_account_name":       "teststorageaccount001",
+                            "tags":                       null,
+                            "timeouts":                   null,
+                            "use_extension_bundle":       true,
+                            "version":                    "~3",
+                            "virtual_network_subnet_id":  "/subscriptions/c2bd123a-183f-43d5-bf41-c725494e595a/resourceGroups/test-rg/providers/Microsoft.Network/virtualNetworks/test-rg/subnets/test-subnet",
+                        },
+                        "destroy": false,
+                    },
+                },
+            },
+        },
+    },
+}
+
+module_paths = [
+    [],
+]
+
+terraform_version = "1.9.5"
+
+variables = {}
+
+module = func(path) {
+    if types.type_of(path) is not "list" {
+        error("expected list, got", types.type_of(path))
+    }
+
+    if length(path) < 1 {
+        return _modules.root
+    }
+
+    addr = []
+    for path as p {
+        append(addr, "module")
+        append(addr, p)
+    }
+
+    return _modules[strings.join(addr, ".")]
+}
+
+data = _modules.root.data
+path = _modules.root.path
+resources = _modules.root.resources
+
 			"index":          null,
 			"mode":           "managed",
 			"module_address": "",
