@@ -17,10 +17,10 @@ resource "azurerm_logic_app_standard" "example" {
   name                       = "test-azure-functions"
   resource_group_name = "test-rg"
   location            = "east us"
-  storage_account_name       = "test-sa"
-  storage_account_access_key = ""
-  app_service_plan_id     = ""
-  virtual_network_subnet_id = ""
+  storage_account_name       = "test-storage"
+  storage_account_access_key = "BjYCZEHX2OCqz/HWJdWp4rHfpLIAMJt0adLxzQnpItXCSyKwArG8iCgFfVNW/6pgabrtlniTcEaK+AStF5N8xQ=="
+  app_service_plan_id     = "/subscriptions/c2bd123a-183f-43d5-bf41-c725494e595a/resourceGroups/test-rg/providers/Microsoft.Web/serverfarms/test-asp"
+  virtual_network_subnet_id = "/subscriptions/c2bd123a-183f-43d5-bf41-c725494e595a/resourceGroups/test-rg/providers/Microsoft.Network/virtualNetworks/test-rg/subnets/test-subnet"
   site_config {  
   }
 }
