@@ -1,19 +1,14 @@
 # Import tfplan-functions.sentinel with alias "plan"
 import "tfplan-functions" as plan
 
-# Get all Logic Apps
-all_logic_apps = plan.find_resources("azurerm_logic_app_workflow")
+# Get all Azure Logic Apps
+all_azure_logic_apps = plan.find_resources("azurerm_logic_app_standard")
 
-# Filter to Logic Apps that do not have Virtual Network Integration enabled
-violating_logic_apps_vnet_integration = plan.filter_attribute_is_value(
-    all_logic_apps, 
-    "integration_service_environment_id", 
-    null, 
-    true
-)
+# Filter to Azure Logic Apps without VNet integration
+ violating_azure_logic_apps_vnet_integration = plan.filter_attribute_is_not_value(all_azure_logic_apps, "virtual_network_subnet_id", null, true)
+# violating_azure_logic_apps_vnet_integration = plan.filter_attribute_is_null(all_azure_logic_apps, "virtual_network_subnet_id", true)
 
 # Main rule
 main = rule {
-    length(violating_logic_apps_vnet_integration["messages"]) is 0
+    length(violating_azure_logic_apps_vnet_integration["messages"]) is 0
 }
-
