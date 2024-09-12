@@ -12,18 +12,8 @@ module "azure-functions" {
 #------------------------------------------------------------------------------
 # Sentinel Policies
 #------------------------------------------------------------------------------
-policy "enforce-required-tags" {
-  source            = "../../policies/azure/enforce-required-tags.sentinel"
-  enforcement_level = "advisory"
-}
-
-policy "restrict-vm-size" {
-  source            = "../../policies/azure/restrict-vm-size.sentinel"
-  enforcement_level = "advisory"
-}
-
-policy "enforce-key-vault-recovery" {
-  source = "../../policies/azure/enforce-key-vault-recovery.sentinel"
+policy "enforce-lapp-vnet-integration" {
+  source = "../../policies/azure/enforce-lapp-vnet-integration.sentinel"
   enforcement_level = "advisory"
 }
 
