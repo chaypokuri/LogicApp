@@ -13,14 +13,24 @@ terraform {
     }
   }
 }
-resource "azurerm_logic_app_standard" "example" {
-  name                       = "test-azure-functions"
-  resource_group_name = "test-rg"
-  location            = "east us"
-  storage_account_name       = "teststorageaccount001"
-  storage_account_access_key = "BjYCZEHX2OCqz/HWJdWp4rHfpLIAMJt0adLxzQnpItXCSyKwArG8iCgFfVNW/6pgabrtlniTcEaK+AStF5N8xQ=="
-  app_service_plan_id     = "/subscriptions/c2bd123a-183f-43d5-bf41-c725494e595a/resourceGroups/test-rg/providers/Microsoft.Web/serverfarms/test-asp"
-  virtual_network_subnet_id = "/subscriptions/c2bd123a-183f-43d5-bf41-c725494e595a/resourceGroups/test-rg/providers/Microsoft.Network/virtualNetworks/test-rg/subnets/test-subnet"
-  site_config {  
-  }
+
+module "key_vault" {
+  source  = "app.terraform.io/BannerHealth/key_vault/azurerm"
+  version = "1.0.0"
+
+  for_each = var.key_vaults
+
+  name                            = each.value.name
+  resource_group_name             = module.resource_group[each.value.resource_group_key].name
+  location                        = var.global_config.location
+  sku_name                        = each.value.sku_name
+  key_vault_keys                  = each.value.key_vault_keys
+  key_vault_secrets               = each.value.key_vault_secrets
+  enabled_for_deployment          = each.value.enabled_for_deployment
+  enabled_for_disk_encryption     = each.value.enabled_for_disk_encryption
+  enabled_for_template_deployment = each.value.enabled_for_template_deployment
+  purge_protection_enabled        = each.value.purge_protection_enabled
+  soft_delete_retention_days      = each.value.soft_delete_retention_days
+  network_acls                    = each.value.network_acls
+  tags                            = merge(var.global_config.mandatory_tags, each.value.tags)
 }
