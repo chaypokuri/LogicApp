@@ -46,22 +46,19 @@ resource "azurerm_subnet" "this" {
   }
 }
 
-resource "azurerm_app_service_plan" "this" {
-  name                = "azure-functions-test-service-plan"
-  location            = azurerm_resource_group.this.location
+resource "azurerm_service_plan" "this" {
+  name                = "test-azure-serviceplan"
   resource_group_name = azurerm_resource_group.this.name
-  kind                = "elastic"
-  sku {
-    tier = "WorkflowStandard"
-    size = "WS1"
-  }
+  location            = azurerm_resource_group.this.location
+  os_type             = "Linux"
+  sku_name            = "P1v2"
 }
 
 resource "azurerm_logic_app_standard" "this" {
   name                       = "test-azure-lapp"
   location                   = azurerm_resource_group.this.location
   resource_group_name        = azurerm_resource_group.this.name
-  app_service_plan_id        = azurerm_app_service_plan.this.id
+  service_plan_id            = azurerm_service_plan.this.id
   storage_account_name       = azurerm_storage_account.this.name
   storage_account_access_key = azurerm_storage_account.this.primary_access_key
   virtual_network_subnet_id  = azurerm_subnet.this.id
