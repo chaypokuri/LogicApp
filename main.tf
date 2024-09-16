@@ -64,6 +64,6 @@ resource "azurerm_logic_app_standard" "this" {
   app_service_plan_id        = azurerm_app_service_plan.this.id
   storage_account_name       = azurerm_storage_account.this.name
   storage_account_access_key = azurerm_storage_account.this.primary_access_key
-  virtual_network_subnet_id  = azurerm_subnet.this.id
+  #virtual_network_subnet_id  = azurerm_subnet.this.id
 }
 
