@@ -1,0 +1,17 @@
+# Import tfplan-functions.sentinel with alias "plan"
+import "tfplan-functions" as plan
+
+# Get all Azure Application Gateways
+all_azure_app_gateways = plan.find_resources("azurerm_application_gateway")
+
+# Filter to Azure Application Gateways without minimum TLSv1_2 for encryption in transit
+violating_app_gateways_tls = plan.filter_attribute_not_equals(all_azure_app_gateways, "min_protocol_version", "TLSv1_2", true)
+
+# Filter to Azure Application Gateways without HTTPS protocol for listeners
+violating_app_gateways_https = plan.filter_attribute_not_equals(all_azure_app_gateways, "http_listener.protocol", "Https", true)
+
+# Main rule to enforce encryption in transit
+main = rule {
+    length(violating_app_gateways_tls["messages"]) is 0 and
+    length(violating_app_gateways_https["messages"]) is 0
+}
