@@ -1,5 +1,9 @@
 provider "azurerm" {
   features {}
+  subscription_id = "c2bd123a-183f-43d5-bf41-c725494e595a"
+  tenant_id       = "3180c264-31bc-4113-8f50-b7393a40457b"
+  client_id       = "1a046c02-8c39-4f1d-b30b-93f41a9c6b15"
+  client_secret   = "kUz8Q~qwom0J-MM5ZNqexXyUOguygMj5QELdhdl5"
 }
 terraform {
   required_providers {
@@ -9,56 +13,98 @@ terraform {
     }
   }
 }
-resource "azurerm_resource_group" "this" {
-  name     = "azure-test-rg"
-  location = "east us"
+resource "azurerm_resource_group" "example" {
+  name     = "example-resources"
+  location = "West Europe"
 }
 
-resource "azurerm_storage_account" "this" {
-  name                     = "logicsapptestsa"
-  resource_group_name      = azurerm_resource_group.this.name
-  location                 = azurerm_resource_group.this.location
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-}
-resource "azurerm_virtual_network" "this" {
-  name                = "this-virtual-network"
-  address_space       = ["10.0.0.0/24"]
-  location            = azurerm_resource_group.this.location
-  resource_group_name = azurerm_resource_group.this.name
+resource "azurerm_virtual_network" "example" {
+  name                = "example-network"
+  resource_group_name = azurerm_resource_group.example.name
+  location            = azurerm_resource_group.example.location
+  address_space       = ["10.254.0.0/16"]
 }
 
-resource "azurerm_subnet" "this" {
-  name                 = "this-subnet"
-  resource_group_name  = azurerm_resource_group.this.name
-  virtual_network_name = azurerm_virtual_network.this.name
-  address_prefixes     = ["10.0.1.0/27"]
-  delegation {
-    name = "this-delegation"
-    service_delegation {
-      name    = "Microsoft.Web/serverFarms"
-      actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
-    }
-  }
+resource "azurerm_subnet" "example" {
+  name                 = "example"
+  resource_group_name  = azurerm_resource_group.example.name
+  virtual_network_name = azurerm_virtual_network.example.name
+  address_prefixes     = ["10.254.0.0/24"]
 }
 
-resource "azurerm_app_service_plan" "this" {
-  name                = "azure-functions-test-service-plan"
-  location            = azurerm_resource_group.this.location
-  resource_group_name = azurerm_resource_group.this.name
-  kind                = "elastic"
+resource "azurerm_public_ip" "example" {
+  name                = "example-pip"
+  resource_group_name = azurerm_resource_group.example.name
+  location            = azurerm_resource_group.example.location
+  allocation_method   = "Static"
+}
+
+locals {
+  backend_address_pool_name      = "${azurerm_virtual_network.example.name}-beap"
+  frontend_port_name             = "${azurerm_virtual_network.example.name}-feport"
+  frontend_ip_configuration_name = "${azurerm_virtual_network.example.name}-feip"
+  http_setting_name              = "${azurerm_virtual_network.example.name}-be-htst"
+  listener_name                  = "${azurerm_virtual_network.example.name}-httplstn"
+  request_routing_rule_name      = "${azurerm_virtual_network.example.name}-rqrt"
+  redirect_configuration_name    = "${azurerm_virtual_network.example.name}-rdrcfg"
+}
+
+resource "azurerm_application_gateway" "network" {
+  name                = "example-appgateway"
+  resource_group_name = azurerm_resource_group.example.name
+  location            = azurerm_resource_group.example.location
+
   sku {
-    tier = "WorkflowStandard"
-    size = "WS1"
+    name     = "Standard_v2"
+    tier     = "Standard_v2"
+    capacity = 2
+  }
+
+  gateway_ip_configuration {
+    name      = "my-gateway-ip-configuration"
+    subnet_id = azurerm_subnet.example.id
+  }
+
+  frontend_port {
+    name = local.frontend_port_name
+    port = 443 # HTTPS port
+  }
+
+  frontend_ip_configuration {
+    name                 = local.frontend_ip_configuration_name
+    public_ip_address_id = azurerm_public_ip.example.id
+  }
+
+  backend_address_pool {
+    name = local.backend_address_pool_name
+  }
+
+  backend_http_settings {
+    name                  = local.http_setting_name
+    cookie_based_affinity = "Disabled"
+    path                  = "/path1/"
+    port                  = 443 
+    protocol              = "Https"
+    request_timeout       = 60
+  }
+
+  http_listener {
+    name                           = local.listener_name
+    frontend_ip_configuration_name = local.frontend_ip_configuration_name
+    frontend_port_name             = local.frontend_port_name
+    protocol                       = "Https" 
+  }
+
+  ssl_policy {
+    min_protocol_version = "TLSv1_2"  # Enforce minimum TLS version 1.2
+  }
+
+  request_routing_rule {
+    name                       = local.request_routing_rule_name
+    priority                   = 9
+    rule_type                  = "Basic"
+    http_listener_name         = local.listener_name
+    backend_address_pool_name  = local.backend_address_pool_name
+    backend_http_settings_name = local.http_setting_name
   }
 }
-
-resource "azurerm_logic_app_standard" "this" {
-  name                       = "test-azure-lapp"
-  location                   = azurerm_resource_group.this.location
-  resource_group_name        = azurerm_resource_group.this.name
-  app_service_plan_id        = azurerm_app_service_plan.this.id
-  storage_account_name       = azurerm_storage_account.this.name
-  storage_account_access_key = azurerm_storage_account.this.primary_access_key
-}
-
