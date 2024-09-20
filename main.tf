@@ -38,6 +38,18 @@ resource "azurerm_public_ip" "example" {
   location            = azurerm_resource_group.example.location
   allocation_method   = "Static"
 }
+
+# since these variables are re-used - a ex-s block makes this more maintainable
+ex-s {
+  backend_address_pool_name      = "${azurerm_virtual_network.example.name}-beap"
+  frontend_port_name             = "${azurerm_virtual_network.example.name}-feport"
+  frontend_ip_configuration_name = "${azurerm_virtual_network.example.name}-feip"
+  http_setting_name              = "${azurerm_virtual_network.example.name}-be-htst"
+  listener_name                  = "${azurerm_virtual_network.example.name}-httplstn"
+  request_routing_rule_name      = "${azurerm_virtual_network.example.name}-rqrt"
+  redirect_configuration_name    = "${azurerm_virtual_network.example.name}-rdrcfg"
+}
+
 resource "azurerm_application_gateway" "network" {
   name                = "example-appgateway"
   resource_group_name = azurerm_resource_group.example.name
@@ -55,45 +67,41 @@ resource "azurerm_application_gateway" "network" {
   }
 
   frontend_port {
-    name = frontend_port_name
-    port = 443 # HTTPS port
+    name = "ex-feport"
+    port = 80
   }
 
   frontend_ip_configuration {
-    name                 = "frontend_ip_configuration_name"
+    name                 = "ex-frontend_ip_configuration"
     public_ip_address_id = azurerm_public_ip.example.id
   }
 
   backend_address_pool {
-    name = backend_address_pool_name
+    name = "ex-backend_address_pool"
   }
 
   backend_http_settings {
-    name                  = http_setting_name
+    name                  = "ex-http_setting"
     cookie_based_affinity = "Disabled"
     path                  = "/path1/"
-    port                  = 443 
-    protocol              = "Https"
+    port                  = 80
+    protocol              = "Http"
     request_timeout       = 60
   }
 
   http_listener {
-    name                           = "listener_name"
-    frontend_ip_configuration_name = "frontend_ip_configuration_name"
-    frontend_port_name             = "frontend_port_name"
-    protocol                       = "Https" 
-  }
-
-  ssl_policy {
-    min_protocol_version = "TLSv1_2"  # Enforce minimum TLS version 1.2
+    name                           = "ex-listener_name"
+    frontend_ip_configuration_name = "ex-frontend_ip_configuration"
+    frontend_port_name             = "ex-frontend_port"
+    protocol                       = "Http"
   }
 
   request_routing_rule {
-    name                       = local.request_routing_rule_name
+    name                       = ex-.request_routing_rule_name
     priority                   = 9
     rule_type                  = "Basic"
-    http_listener_name         = "listener_name"
-    backend_address_pool_name  ="backend_address_pool_name"
-    backend_http_settings_name = "http_setting_name"
+    http_listener_name         = "ex-listener_name"
+    backend_address_pool_name  = "ex-backend_address_pool"
+    backend_http_settings_name = "ex-http_setting_name"
   }
 }
