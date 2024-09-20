@@ -60,7 +60,7 @@ resource "azurerm_application_gateway" "network" {
   }
 
   frontend_ip_configuration {
-    name                 = frontend_ip_configuration_name
+    name                 = "frontend_ip_configuration_name"
     public_ip_address_id = azurerm_public_ip.example.id
   }
 
@@ -78,9 +78,9 @@ resource "azurerm_application_gateway" "network" {
   }
 
   http_listener {
-    name                           = listener_name
-    frontend_ip_configuration_name = frontend_ip_configuration_name
-    frontend_port_name             = frontend_port_name
+    name                           = "listener_name"
+    frontend_ip_configuration_name = "frontend_ip_configuration_name"
+    frontend_port_name             = "frontend_port_name"
     protocol                       = "Https" 
   }
 
@@ -92,8 +92,8 @@ resource "azurerm_application_gateway" "network" {
     name                       = local.request_routing_rule_name
     priority                   = 9
     rule_type                  = "Basic"
-    http_listener_name         = listener_name
-    backend_address_pool_name  = backend_address_pool_name
-    backend_http_settings_name = http_setting_name
+    http_listener_name         = "listener_name"
+    backend_address_pool_name  ="backend_address_pool_name"
+    backend_http_settings_name = "http_setting_name"
   }
 }
