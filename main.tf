@@ -93,6 +93,8 @@ resource "azurerm_application_gateway" "network" {
     backend_address_pool_name  = "ex-backend_address_pool"
     backend_http_settings_name = "ex-http_setting_name"
   }
-ssl_policy {
-  min_protocol_version = "TLSv1_2"
+  ssl_policy {
+   min_protocol_version = "TLSv1_2"
+  }
 }
+
