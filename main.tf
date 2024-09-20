@@ -86,7 +86,7 @@ resource "azurerm_application_gateway" "network" {
   }
 
   request_routing_rule {
-    name                       = ex-.request_routing_rule_name
+    name                       = "ex-request_routing_rule"
     priority                   = 9
     rule_type                  = "Basic"
     http_listener_name         = "ex-listener_name"
