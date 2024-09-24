@@ -76,11 +76,11 @@ resource "azurerm_application_gateway" "app_gateway" {
     backend_http_settings_name = "backend-http-setting"
   }]
 }
-  ssl_policy {
+  ssl_policy = [{
    min_protocol_version = "TLSv1_3"
    disabled_protocols   = ["TLSv1_0", "TLSv1_1","TLSv1_2"]
    cipher_suites        = ["TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256", "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"]
-  }
+  }]
 }
 
 
