@@ -68,7 +68,7 @@ resource "azurerm_application_gateway" "network" {
 
   frontend_port {
     name = local.frontend_port_name
-    port = 80
+    port = 443
   }
 
   frontend_ip_configuration {
@@ -84,8 +84,8 @@ resource "azurerm_application_gateway" "network" {
     name                  = local.http_setting_name
     cookie_based_affinity = "Disabled"
     path                  = "/path1/"
-    port                  = 80
-    protocol              = "Http"
+    port                  = 443
+    protocol              = "Https"
     request_timeout       = 60
   }
 
@@ -93,7 +93,7 @@ resource "azurerm_application_gateway" "network" {
     name                           = local.listener_name
     frontend_ip_configuration_name = local.frontend_ip_configuration_name
     frontend_port_name             = local.frontend_port_name
-    protocol                       = "Http"
+    protocol                       = "Https"
   }
 
   request_routing_rule {
@@ -106,8 +106,8 @@ resource "azurerm_application_gateway" "network" {
   }
 
   ssl_policy {
-   min_protocol_version = "TLSv1_3"
-   disabled_protocols   = ["TLSv1_0", "TLSv1_1","TLSv1_2"]
+   min_protocol_version = "TLSv1_2"
+   disabled_protocols   = ["TLSv1_0", "TLSv1_1","TLSv1_3"]
    cipher_suites        = ["TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256", "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"]
   }
 }
