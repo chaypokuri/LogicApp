@@ -41,7 +41,7 @@ resource "azurerm_subnet" "snet" {
 }
 
 
-module "application_gateway" {
+resource "azurerm_application_gateway" "app_gateway" {
   source              = "aztfm/application-gateway/azurerm"
   version             = ">=2.0.0"
   name                = "application-gateway"
