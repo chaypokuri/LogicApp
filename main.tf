@@ -39,8 +39,6 @@ resource "azurerm_subnet" "snet" {
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = ["10.0.0.0/24"]
 }
-
-
 resource "azurerm_application_gateway" "app_gateway" {
   source              = "aztfm/application-gateway/azurerm"
   version             = ">=2.0.0"
@@ -53,34 +51,34 @@ resource "azurerm_application_gateway" "app_gateway" {
   frontend_ip_configuration = {
     public_ip_address_id = azurerm_public_ip.pip.id
   }
-  backend_address_pools = [{
+  backend_address_pools {
     name         = "backend-address-pool",
     ip_addresses = ["10.0.0.4", "10.0.0.5"]
-  }]
-  http_listeners = [{
+  }
+  http_listeners {
     name                      = "http-listener"
     frontend_ip_configuration = "Public"
     protocol                  = "Http"
     port                      = 80
-  }]
-  backend_http_settings = [{
+  }
+  backend_http_settings {
     name     = "backend-http-setting-1"
     protocol = "Http"
     port     = 80
-  }]
-  request_routing_rules = [{
+  }
+  request_routing_rules  {
     name                       = "request-routing-rule"
     priority                   = 100
     http_listener_name         = "http-listener"
     backend_address_pool_name  = "backend-address-pool"
     backend_http_settings_name = "backend-http-setting"
-  }]
+  }
 }
-  ssl_policy = [{
+  ssl_policy {
    min_protocol_version = "TLSv1_3"
    disabled_protocols   = ["TLSv1_0", "TLSv1_1","TLSv1_2"]
    cipher_suites        = ["TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256", "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"]
-  }]
+  }
 }
 
 
