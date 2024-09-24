@@ -13,88 +13,73 @@ terraform {
     }
   }
 }
-resource "azurerm_resource_group" "example" {
-  name     = "example-resources"
-  location = "West Europe"
+resource "azurerm_resource_group" "rg" {
+  name     = "resource-group"
+  location = "Spain Central"
 }
- 
-resource "azurerm_virtual_network" "example" {
-  name                = "example-network"
-  resource_group_name = azurerm_resource_group.example.name
-  location            = azurerm_resource_group.example.location
-  address_space       = ["10.254.0.0/16"]
-}
- 
-resource "azurerm_subnet" "example" {
-  name                 = "example"
-  resource_group_name  = azurerm_resource_group.example.name
-  virtual_network_name = azurerm_virtual_network.example.name
-  address_prefixes     = ["10.254.0.0/24"]
-}
- 
-resource "azurerm_public_ip" "example" {
-  name                = "example-pip"
-  resource_group_name = azurerm_resource_group.example.name
-  location            = azurerm_resource_group.example.location
+
+resource "azurerm_public_ip" "pip" {
+  name                = "pip"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  sku                 = "Standard"
   allocation_method   = "Static"
 }
- 
-resource "azurerm_application_gateway" "network" {
-  name                = "example-appgateway"
-  resource_group_name = azurerm_resource_group.example.name
-  location            = azurerm_resource_group.example.location
- 
-  sku {
-    name     = "Standard_v2"
-    tier     = "Standard_v2"
-    capacity = 2
+
+resource "azurerm_virtual_network" "vnet" {
+  name                = "virtual-network"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  address_space       = ["10.0.0.0/24"]
+}
+
+resource "azurerm_subnet" "snet" {
+  name                 = "virtual-subnet"
+  resource_group_name  = azurerm_virtual_network.vnet.resource_group_name
+  virtual_network_name = azurerm_virtual_network.vnet.name
+  address_prefixes     = ["10.0.0.0/24"]
+}
+
+
+module "application_gateway" {
+  source              = "aztfm/application-gateway/azurerm"
+  version             = ">=2.0.0"
+  name                = "application-gateway"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  sku_name            = "WAF_v2"
+  capacity            = 1
+  subnet_id           = azurerm_subnet.snet.id
+  frontend_ip_configuration = {
+    public_ip_address_id = azurerm_public_ip.pip.id
   }
- 
-  gateway_ip_configuration {
-    name      = "my-gateway-ip-configuration"
-    subnet_id = azurerm_subnet.example.id
-  }
- 
-  frontend_port {
-    name = "ex-feport"
-    port = 80
-  }
- 
-  frontend_ip_configuration {
-    name                 = "ex-frontend_ip_configuration"
-    public_ip_address_id = azurerm_public_ip.example.id
-  }
- 
-  backend_address_pool {
-    name = "ex-backend_address_pool"
-  }
- 
-  backend_http_settings {
-    name                  = "ex-http_setting"
-    cookie_based_affinity = "Disabled"
-    path                  = "/path1/"
-    port                  = 80
-    protocol              = "Http"
-    request_timeout       = 60
-  }
- 
-  http_listener {
-    name                           = "ex-listener_name"
-    frontend_ip_configuration_name = "ex-frontend_ip_configuration"
-    frontend_port_name             = "ex-frontend_port"
-    protocol                       = "Http"
-  }
- 
-  request_routing_rule {
-    name                       = "ex-request_routing_rule"
-    priority                   = 9
-    rule_type                  = "Basic"
-    http_listener_name         = "ex-listener_name"
-    backend_address_pool_name  = "ex-backend_address_pool"
-    backend_http_settings_name = "ex-http_setting_name"
-  }
+  backend_address_pools = [{
+    name         = "backend-address-pool",
+    ip_addresses = ["10.0.0.4", "10.0.0.5"]
+  }]
+  http_listeners = [{
+    name                      = "http-listener"
+    frontend_ip_configuration = "Public"
+    protocol                  = "Http"
+    port                      = 80
+  }]
+  backend_http_settings = [{
+    name     = "backend-http-setting-1"
+    protocol = "Http"
+    port     = 80
+  }]
+  request_routing_rules = [{
+    name                       = "request-routing-rule"
+    priority                   = 100
+    http_listener_name         = "http-listener"
+    backend_address_pool_name  = "backend-address-pool"
+    backend_http_settings_name = "backend-http-setting"
+  }]
+}
   ssl_policy {
-   min_protocol_version = "TLSv1_2"
+   min_protocol_version = "TLSv1_3"
+   disabled_protocols   = ["TLSv1_0", "TLSv1_1","TLSv1_2"]
+   cipher_suites        = ["TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256", "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"]
   }
 }
 
