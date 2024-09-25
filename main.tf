@@ -107,7 +107,7 @@ resource "azurerm_application_gateway" "network" {
 
   ssl_policy {
    min_protocol_version = "TLSv1_2"
-   disabled_protocols   = ["TLSv1_0", "TLSv1_1","TLSv1_3"]
+   disabled_protocols   = ["TLSv1_0", "TLSv1_1"]
    cipher_suites        = ["TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256", "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"]
   }
 }
