@@ -54,7 +54,7 @@ resource "azurerm_application_gateway" "this" {
 
   frontend_port {
     name = "frontend-port-http"
-    port = 80
+    port = 443
   }
   frontend_ip_configuration {
     name                 = "frontend-ip-configuration"
@@ -69,7 +69,7 @@ resource "azurerm_application_gateway" "this" {
     name                           = "http-listener-this"
     frontend_ip_configuration_name = "frontend-ip-configuration"
     frontend_port_name             = "frontend-port-http"
-    protocol                       = "Http"
+    protocol                       = "Https"
   }
   backend_http_settings {
     name                  = "http-settings"
@@ -88,7 +88,7 @@ resource "azurerm_application_gateway" "this" {
    ssl_policy {
     policy_type         = "Predefined"
     policy_name   = "AppGwSslPolicy20170401S" # Strong security settings
-    min_protocol_version = "TLSv1_1"
+    min_protocol_version = "TLSv1_2"
     cipher_suites = [
       "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
       "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
