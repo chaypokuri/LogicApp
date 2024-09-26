@@ -81,15 +81,4 @@ resource "azurerm_log_analytics_workspace" "example" {
   sku                 = "PerGB2018"
 }
  
-# Output the AKS cluster details
-output "kubernetes_cluster_name" {
-  value = azurerm_kubernetes_cluster.aks_cluster.name
-}
- 
-output "kubernetes_cluster_api_url" {
-  value = azurerm_kubernetes_cluster.aks_cluster.kube_config.0.host
-}
- 
-output "kubernetes_cluster_kube_config" {
-  value = azurerm_kubernetes_cluster.aks_cluster.kube_config_raw
-}
+
