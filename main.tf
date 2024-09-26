@@ -87,13 +87,11 @@ resource "azurerm_application_gateway" "this" {
   }
    ssl_policy {
     policy_type         = "Predefined"
-    predefined_policy   = "AppGwSslPolicy20170401S" # Strong security settings
+    policy_name   = "AppGwSslPolicy20170401S" # Strong security settings
     min_protocol_version = "TLSv1_1"
     cipher_suites = [
       "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
-      "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
-      "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
-      "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384"
+      "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
     ]
   }
 }
