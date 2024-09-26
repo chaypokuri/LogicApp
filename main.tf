@@ -61,19 +61,8 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
     load_balancer_sku = "standard"
     dns_service_ip    = "10.0.2.10"
     service_cidr      = "10.0.2.0/24"
-    docker_bridge_cidr = "172.17.0.1/16"
   }
- 
-  role_based_access_control {
-    enabled = true
-  }
- 
-  addon_profile {
-    oms_agent {
-      enabled                    = true
-      log_analytics_workspace_id  = azurerm_log_analytics_workspace.example.id
-    }
-  }
+
  
   tags = {
     environment = "Development"
