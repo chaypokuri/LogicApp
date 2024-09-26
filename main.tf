@@ -41,6 +41,7 @@ resource "azurerm_application_gateway" "this" {
   name                = "app-gateway-this"
   location            = azurerm_resource_group.this.location
   resource_group_name = azurerm_resource_group.this.name
+
   gateway_ip_configuration {
     name      = "gateway-ip-configuration"
     subnet_id = azurerm_subnet.this.id
@@ -53,7 +54,7 @@ resource "azurerm_application_gateway" "this" {
   }
 
   frontend_port {
-    name = "frontend-port-http"
+    name = "frontend-port-https"
     port = 443
   }
   frontend_ip_configuration {
@@ -66,28 +67,28 @@ resource "azurerm_application_gateway" "this" {
   }
 
   http_listener {
-    name                           = "http-listener-this"
+    name                           = "https-listener-this"
     frontend_ip_configuration_name = "frontend-ip-configuration"
-    frontend_port_name             = "frontend-port-http"
+    frontend_port_name             = "frontend-port-https"
     protocol                       = "Https"
   }
   backend_http_settings {
-    name                  = "http-settings"
+    name                  = "https-settings"
     cookie_based_affinity = "Disabled"
-    port                  = 80
-    protocol              = "Http"
+    port                  = 443
+    protocol              = "Https"
     request_timeout       = 20
   }
   request_routing_rule {
-    name                       = "rule-http"
+    name                       = "rule-https"
     rule_type                  = "Basic"
-    http_listener_name         = "http-listener-this"
+    http_listener_name         = "https-listener-this"
     backend_address_pool_name  = "backend-address-pool"
-    backend_http_settings_name = "http-settings"
+    backend_http_settings_name = "https-settings"
   }
    ssl_policy {
     policy_type         = "Predefined"
-    policy_name   = "AppGwSslPolicy20170401S" # Strong security settings
+    policy_name   = "AppGwSslPolicy20170401S" 
     min_protocol_version = "TLSv1_2"
     cipher_suites = [
       "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
