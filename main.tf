@@ -63,9 +63,6 @@ resource "azurerm_application_gateway" "this" {
 
   backend_address_pool {
     name = "backend-address-pool"
-    backend_addresses {
-      ip_address = "10.0.2.4"
-    }
   }
 
   http_listener {
@@ -87,5 +84,16 @@ resource "azurerm_application_gateway" "this" {
     http_listener_name         = "http-listener-this"
     backend_address_pool_name  = "backend-address-pool"
     backend_http_settings_name = "http-settings"
+  }
+   ssl_policy {
+    policy_type         = "Predefined"
+    predefined_policy   = "AppGwSslPolicy20170401S" # Strong security settings
+    min_protocol_version = "TLSv1_1"
+    cipher_suites = [
+      "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+      "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+      "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
+      "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384"
+    ]
   }
 }
