@@ -5,80 +5,87 @@ provider "azurerm" {
   client_id       = "1a046c02-8c39-4f1d-b30b-93f41a9c6b15"
   client_secret   = "kUz8Q~qwom0J-MM5ZNqexXyUOguygMj5QELdhdl5"
 }
- 
 # Resource Group
-resource "azurerm_resource_group" "aks_rg" {
-  name     = "aks-resource-group"
+resource "azurerm_resource_group" "this" {
+  name     = "rg-this"
   location = "East US"
 }
- 
+
 # Virtual Network
-resource "azurerm_virtual_network" "aks_vnet" {
-  name                = "aks-vnet"
+resource "azurerm_virtual_network" "this" {
+  name                = "vnet-this"
+  location            = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.this.name
   address_space       = ["10.0.0.0/16"]
-  location            = azurerm_resource_group.aks_rg.location
-  resource_group_name = azurerm_resource_group.aks_rg.name
 }
- 
-# Subnet for AKS
-resource "azurerm_subnet" "aks_subnet" {
-  name                 = "aks-subnet"
-  resource_group_name  = azurerm_resource_group.aks_rg.name
-  virtual_network_name = azurerm_virtual_network.aks_vnet.name
+
+# Subnet for Application Gateway
+resource "azurerm_subnet" "this" {
+  name                 = "subnet-application-gateway"
+  resource_group_name  = azurerm_resource_group.this.name
+  virtual_network_name = azurerm_virtual_network.this.name
   address_prefixes     = ["10.0.1.0/24"]
 }
- 
-# Network Security Group for AKS Subnet (Optional)
-resource "azurerm_network_security_group" "aks_nsg" {
-  name                = "aks-nsg"
-  location            = azurerm_resource_group.aks_rg.location
-  resource_group_name = azurerm_resource_group.aks_rg.name
+
+# Public IP for Application Gateway
+resource "azurerm_public_ip" "this" {
+  name                = "public-ip-this"
+  location            = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.this.name
+  allocation_method   = "Static"
+  sku                 = "Standard"
 }
- 
-# Attach NSG to Subnet
-resource "azurerm_subnet_network_security_group_association" "aks_subnet_nsg" {
-  subnet_id                 = azurerm_subnet.aks_subnet.id
-  network_security_group_id = azurerm_network_security_group.aks_nsg.id
-}
- 
-# AKS Cluster
-resource "azurerm_kubernetes_cluster" "aks_cluster" {
-  name                = "aks-cluster"
-  location            = azurerm_resource_group.aks_rg.location
-  resource_group_name = azurerm_resource_group.aks_rg.name
-  dns_prefix          = "aksdns"
- 
-  default_node_pool {
-    name       = "default"
-    node_count = 1
-    vm_size    = "Standard_DS2_v2"
-    vnet_subnet_id = azurerm_subnet.aks_subnet.id
-  }
- 
-  identity {
-    type = "SystemAssigned"
-  }
- 
-  network_profile {
-    network_plugin = "azure"
-    network_policy = "azure"
-    load_balancer_sku = "standard"
-    dns_service_ip    = "10.0.2.10"
-    service_cidr      = "10.0.2.0/24"
+
+# Application Gateway
+resource "azurerm_application_gateway" "this" {
+  name                = "app-gateway-this"
+  location            = azurerm_resource_group.this.location
+  resource_group_name = azurerm_resource_group.this.name
+  gateway_ip_configuration {
+    name      = "gateway-ip-configuration"
+    subnet_id = azurerm_subnet.this.id
   }
 
- 
-  tags = {
-    environment = "Development"
+  sku {
+    name     = "Standard_v2"
+    tier     = "Standard_v2"
+    capacity = 2
+  }
+
+  frontend_port {
+    name = "frontend-port-http"
+    port = 80
+  }
+  frontend_ip_configuration {
+    name                 = "frontend-ip-configuration"
+    public_ip_address_id = azurerm_public_ip.this.id
+  }
+
+  backend_address_pool {
+    name = "backend-address-pool"
+    backend_addresses {
+      ip_address = "10.0.2.4"
+    }
+  }
+
+  http_listener {
+    name                           = "http-listener-this"
+    frontend_ip_configuration_name = "frontend-ip-configuration"
+    frontend_port_name             = "frontend-port-http"
+    protocol                       = "Http"
+  }
+  backend_http_settings {
+    name                  = "http-settings"
+    cookie_based_affinity = "Disabled"
+    port                  = 80
+    protocol              = "Http"
+    request_timeout       = 20
+  }
+  request_routing_rule {
+    name                       = "rule-http"
+    rule_type                  = "Basic"
+    http_listener_name         = "http-listener-this"
+    backend_address_pool_name  = "backend-address-pool"
+    backend_http_settings_name = "http-settings"
   }
 }
- 
-# Log Analytics Workspace (Optional)
-resource "azurerm_log_analytics_workspace" "example" {
-  name                = "aks-log-workspace"
-  location            = azurerm_resource_group.aks_rg.location
-  resource_group_name = azurerm_resource_group.aks_rg.name
-  sku                 = "PerGB2018"
-}
- 
-
