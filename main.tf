@@ -1,105 +1,102 @@
 provider "azurerm" {
   features {}
- subscription_id = "c2bd123a-183f-43d5-bf41-c725494e595a"
-
 }
-resource "azurerm_resource_group" "this" {
-  name     = "this-resources"
-  location = "West Europe"
+ 
+# Resource Group
+resource "azurerm_resource_group" "aks_rg" {
+  name     = "aks-resource-group"
+  location = "East US"
 }
-
-resource "azurerm_virtual_network" "this" {
-  name                = "this-network"
-  resource_group_name = azurerm_resource_group.this.name
-  location            = azurerm_resource_group.this.location
-  address_space       = ["10.254.0.0/16"]
+ 
+# Virtual Network
+resource "azurerm_virtual_network" "aks_vnet" {
+  name                = "aks-vnet"
+  address_space       = ["10.0.0.0/16"]
+  location            = azurerm_resource_group.aks_rg.location
+  resource_group_name = azurerm_resource_group.aks_rg.name
 }
-
-resource "azurerm_subnet" "this" {
-  name                 = "this"
-  resource_group_name  = azurerm_resource_group.this.name
-  virtual_network_name = azurerm_virtual_network.this.name
-  address_prefixes     = ["10.254.0.0/24"]
+ 
+# Subnet for AKS
+resource "azurerm_subnet" "aks_subnet" {
+  name                 = "aks-subnet"
+  resource_group_name  = azurerm_resource_group.aks_rg.name
+  virtual_network_name = azurerm_virtual_network.aks_vnet.name
+  address_prefixes     = ["10.0.1.0/24"]
 }
-
-resource "azurerm_public_ip" "this" {
-  name                = "this-pip"
-  resource_group_name = azurerm_resource_group.this.name
-  location            = azurerm_resource_group.this.location
-  allocation_method   = "Static"
+ 
+# Network Security Group for AKS Subnet (Optional)
+resource "azurerm_network_security_group" "aks_nsg" {
+  name                = "aks-nsg"
+  location            = azurerm_resource_group.aks_rg.location
+  resource_group_name = azurerm_resource_group.aks_rg.name
 }
-
-# since these variables are re-used - a locals block makes this more maintainable
-locals {
-  backend_address_pool_name      = "${azurerm_virtual_network.this.name}-beap"
-  frontend_port_name             = "${azurerm_virtual_network.this.name}-feport"
-  frontend_ip_configuration_name = "${azurerm_virtual_network.this.name}-feip"
-  http_setting_name              = "${azurerm_virtual_network.this.name}-be-htst"
-  listener_name                  = "${azurerm_virtual_network.this.name}-httplstn"
-  request_routing_rule_name      = "${azurerm_virtual_network.this.name}-rqrt"
-  redirect_configuration_name    = "${azurerm_virtual_network.this.name}-rdrcfg"
+ 
+# Attach NSG to Subnet
+resource "azurerm_subnet_network_security_group_association" "aks_subnet_nsg" {
+  subnet_id                 = azurerm_subnet.aks_subnet.id
+  network_security_group_id = azurerm_network_security_group.aks_nsg.id
 }
-
-resource "azurerm_application_gateway" "network" {
-  name                = "this-appgateway"
-  resource_group_name = azurerm_resource_group.this.name
-  location            = azurerm_resource_group.this.location
-
-  sku {
-    name     = "Standard_v2"
-    tier     = "Standard_v2"
-    capacity = 2
+ 
+# AKS Cluster
+resource "azurerm_kubernetes_cluster" "aks_cluster" {
+  name                = "aks-cluster"
+  location            = azurerm_resource_group.aks_rg.location
+  resource_group_name = azurerm_resource_group.aks_rg.name
+  dns_prefix          = "aksdns"
+ 
+  default_node_pool {
+    name       = "default"
+    node_count = 1
+    vm_size    = "Standard_DS2_v2"
+    vnet_subnet_id = azurerm_subnet.aks_subnet.id
   }
-
-  gateway_ip_configuration {
-    name      = "my-gateway-ip-configuration"
-    subnet_id = azurerm_subnet.this.id
+ 
+  identity {
+    type = "SystemAssigned"
   }
-
-  frontend_port {
-    name = local.frontend_port_name
-    port = 443
+ 
+  network_profile {
+    network_plugin = "azure"
+    network_policy = "azure"
+    load_balancer_sku = "standard"
+    dns_service_ip    = "10.0.2.10"
+    service_cidr      = "10.0.2.0/24"
+    docker_bridge_cidr = "172.17.0.1/16"
   }
-
-  frontend_ip_configuration {
-    name                 = local.frontend_ip_configuration_name
-    public_ip_address_id = azurerm_public_ip.this.id
+ 
+  role_based_access_control {
+    enabled = true
   }
-
-  backend_address_pool {
-    name = local.backend_address_pool_name
+ 
+  addon_profile {
+    oms_agent {
+      enabled                    = true
+      log_analytics_workspace_id  = azurerm_log_analytics_workspace.example.id
+    }
   }
-
-  backend_http_settings {
-    name                  = local.http_setting_name
-    cookie_based_affinity = "Disabled"
-    path                  = "/path1/"
-    port                  = 443
-    protocol              = "Https"
-    request_timeout       = 60
-  }
-
-  http_listener {
-    name                           = local.listener_name
-    frontend_ip_configuration_name = local.frontend_ip_configuration_name
-    frontend_port_name             = local.frontend_port_name
-    protocol                       = "Https"
-  }
-
-  request_routing_rule {
-    name                       = local.request_routing_rule_name
-    priority                   = 9
-    rule_type                  = "Basic"
-    http_listener_name         = local.listener_name
-    backend_address_pool_name  = local.backend_address_pool_name
-    backend_http_settings_name = local.http_setting_name
-  }
-
-  ssl_policy {
-   min_protocol_version = "TLSv1_2"
-   disabled_protocols   = ["TLSv1_0", "TLSv1_1"]
-   cipher_suites        = ["TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256", "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"]
+ 
+  tags = {
+    environment = "Development"
   }
 }
-
-
+ 
+# Log Analytics Workspace (Optional)
+resource "azurerm_log_analytics_workspace" "example" {
+  name                = "aks-log-workspace"
+  location            = azurerm_resource_group.aks_rg.location
+  resource_group_name = azurerm_resource_group.aks_rg.name
+  sku                 = "PerGB2018"
+}
+ 
+# Output the AKS cluster details
+output "kubernetes_cluster_name" {
+  value = azurerm_kubernetes_cluster.aks_cluster.name
+}
+ 
+output "kubernetes_cluster_api_url" {
+  value = azurerm_kubernetes_cluster.aks_cluster.kube_config.0.host
+}
+ 
+output "kubernetes_cluster_kube_config" {
+  value = azurerm_kubernetes_cluster.aks_cluster.kube_config_raw
+}
